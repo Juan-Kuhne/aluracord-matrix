@@ -13,7 +13,7 @@ export default function ChatPage() {
   - Tem que adicionar o texto na listagem
   */
 
-  function handleNovaMansagem(novaMensagem) {
+  function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       id: listaMsg.length + 1,
       de: "vanessametonini",
@@ -22,6 +22,14 @@ export default function ChatPage() {
     setListaMsg([mensagem, ...listaMsg]);
     setMensagem("");
   }
+
+  // const apagarMensagem = (id) => {
+  //   setListaMsg(
+  //     [...listaMsg].filter((value) => {
+  //       value.id !== id;
+  //     })
+  //   );
+  // };
 
   return (
     <Box
@@ -77,7 +85,7 @@ export default function ChatPage() {
             as="form"
             styleSheet={{
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
             }}
           >
             <TextField
@@ -88,7 +96,7 @@ export default function ChatPage() {
               onKeyPress={(event) => {
                 if (event.key === "Enter") {
                   event.preventDefault();
-                  handleNovaMansagem(mensagem);
+                  handleNovaMensagem(mensagem);
                 }
               }}
               placeholder="Insira sua mensagem aqui..."
@@ -104,7 +112,25 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+            <Button
+              type="submit"
+              label="Enviar"
+              onClick={(event) => {
+                event.preventDefault();
+                handleNovaMensagem(mensagem);
+              }}
+              buttonColors={{
+                contrastColor: appConfig.theme.colors.neutrals["000"],
+                mainColor: appConfig.theme.colors.primary[500],
+                mainColorLight: appConfig.theme.colors.primary[400],
+                mainColorStrong: appConfig.theme.colors.primary[600],
+              }}
+              styleSheet={{
+                height: "83%",
+              }}
+            />
           </Box>
+          {/* <TextField /> */}
         </Box>
       </Box>
     </Box>
@@ -136,7 +162,8 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log(props);
+  // console.log(props);
+
   return (
     <Box
       tag="ul"
@@ -166,28 +193,46 @@ function MessageList(props) {
             <Box
               styleSheet={{
                 marginBottom: "8px",
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
-              <Image
-                styleSheet={{
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  display: "inline-block",
-                  marginRight: "8px",
-                }}
-                src={`https://github.com/vanessametonini.png`}
-              />
-              <Text tag="strong">mensagem.de</Text>
+              <Box>
+                <Image
+                  styleSheet={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    display: "inline-block",
+                    marginRight: "8px",
+                  }}
+                  src={`https://github.com/vanessametonini.png`}
+                />
+                <Text tag="strong">mensagem.de</Text>
+                <Text
+                  styleSheet={{
+                    fontSize: "10px",
+                    marginLeft: "8px",
+                    color: appConfig.theme.colors.neutrals[300],
+                  }}
+                  tag="span"
+                >
+                  {new Date().toLocaleDateString()}
+                </Text>
+              </Box>
+
               <Text
-                styleSheet={{
-                  fontSize: "10px",
-                  marginLeft: "8px",
-                  color: appConfig.theme.colors.neutrals[300],
-                }}
                 tag="span"
+                className="ex"
+                // onClick={props.setMsg(mensagem.id)}
+                styleSheet={{
+                  fontSize: "16px",
+                  marginRight: "8px",
+                  color: appConfig.theme.colors.neutrals[300],
+                  cursor: "pointer",
+                }}
               >
-                {new Date().toLocaleDateString()}
+                ✖
               </Text>
             </Box>
             {mensagem.texto}
