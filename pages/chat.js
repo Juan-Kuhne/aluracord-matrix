@@ -3,9 +3,26 @@ import React from "react";
 import appConfig from "../config.json";
 
 export default function ChatPage() {
-  // Sua lógica vai aqui
+  const [mensagem, setMensagem] = React.useState("");
+  const [listaMsg, setListaMsg] = React.useState([]);
 
-  // ./Sua lógica vai aqui
+  // Usuário
+  /*
+  - Usuário digita no campo textarea
+  - aperta enter para enviar
+  - Tem que adicionar o texto na listagem
+  */
+
+  function handleNovaMansagem(novaMensagem) {
+    const mensagem = {
+      id: listaMsg.length + 1,
+      de: "vanessametonini",
+      texto: novaMensagem,
+    };
+    setListaMsg([mensagem, ...listaMsg]);
+    setMensagem("");
+  }
+
   return (
     <Box
       styleSheet={{
@@ -47,8 +64,15 @@ export default function ChatPage() {
             padding: "16px",
           }}
         >
-          <MessageList />
-
+          <MessageList mensagens={listaMsg} />
+          {/* lista de mensagens:{" "}
+          {listaMsg.map((mensagemAtual) => {
+            return (
+              <li key={mensagemAtual.id}>
+                {mensagemAtual.de} : {mensagemAtual.texto}
+              </li>
+            );
+          })} */}
           <Box
             as="form"
             styleSheet={{
@@ -56,10 +80,20 @@ export default function ChatPage() {
               alignItems: "center",
             }}
           >
-            <textarea
+            <TextField
+              value={mensagem}
+              onChange={(event) => {
+                setMensagem(event.target.value);
+              }}
+              onKeyPress={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleNovaMansagem(mensagem);
+                }
+              }}
               placeholder="Insira sua mensagem aqui..."
               type="textarea"
-              style={{
+              styleSheet={{
                 width: "100%",
                 border: "0",
                 resize: "none",
@@ -102,7 +136,7 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log("MessageList", props);
+  console.log(props);
   return (
     <Box
       tag="ul"
@@ -115,47 +149,51 @@ function MessageList(props) {
         marginBottom: "16px",
       }}
     >
-      <Text
-        // key={mensagem.id}
-        tag="li"
-        styleSheet={{
-          borderRadius: "5px",
-          padding: "6px",
-          marginBottom: "12px",
-          hover: {
-            backgroundColor: appConfig.theme.colors.neutrals[700],
-          },
-        }}
-      >
-        <Box
-          styleSheet={{
-            marginBottom: "8px",
-          }}
-        >
-          <Image
-            styleSheet={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-              display: "inline-block",
-              marginRight: "8px",
-            }}
-            src={`https://github.com/vanessametonini.png`}
-          />
-          <Text tag="strong">vanessametonini</Text>
+      {props.mensagens.map((mensagem) => {
+        return (
           <Text
+            key={mensagem.id}
+            tag="li"
             styleSheet={{
-              fontSize: "10px",
-              marginLeft: "8px",
-              color: appConfig.theme.colors.neutrals[300],
+              borderRadius: "5px",
+              padding: "6px",
+              marginBottom: "12px",
+              hover: {
+                backgroundColor: appConfig.theme.colors.neutrals[700],
+              },
             }}
-            tag="span"
           >
-            {new Date().toLocaleDateString()}
+            <Box
+              styleSheet={{
+                marginBottom: "8px",
+              }}
+            >
+              <Image
+                styleSheet={{
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "50%",
+                  display: "inline-block",
+                  marginRight: "8px",
+                }}
+                src={`https://github.com/vanessametonini.png`}
+              />
+              <Text tag="strong">mensagem.de</Text>
+              <Text
+                styleSheet={{
+                  fontSize: "10px",
+                  marginLeft: "8px",
+                  color: appConfig.theme.colors.neutrals[300],
+                }}
+                tag="span"
+              >
+                {new Date().toLocaleDateString()}
+              </Text>
+            </Box>
+            {mensagem.texto}
           </Text>
-        </Box>
-        Mensagem
-      </Text>
+        );
+      })}
     </Box>
   );
 }
