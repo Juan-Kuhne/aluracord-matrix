@@ -37,6 +37,11 @@ export default function PaginaInicial() {
   // const username = "Juan-Kuhne";
   const [username, setUsername] = React.useState("juan-kuhne");
   const roteamento = useRouter();
+  const imgUrl = (username) => {
+    return username.length > 2
+      ? `https://github.com/${username}.png`
+      : "https://www.meme-arsenal.com/memes/c9e6371faa3b57eaee1d35595ca8e910.jpg";
+  };
 
   return (
     <>
@@ -159,10 +164,10 @@ export default function PaginaInicial() {
           >
             <Image
               styleSheet={{
-                borderRadius: "50%",
+                borderRadius: "100%",
                 marginBottom: "16px",
               }}
-              src={`https://github.com/${username}.png`}
+              src={imgUrl(username)}
             />
             <Text
               variant="body4"
