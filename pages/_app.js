@@ -8,7 +8,10 @@ function GlobalStyle() {
         list-style: none;
       }
       body {
-        font-family: "Open Sans", sans-serif;
+        font-family: 'Open Sans', sans-serif;
+      }
+      p {
+        padding: 0.2rem;
       }
       /* App fit Height */
       html,
