@@ -52,9 +52,7 @@ export default function ChatPage() {
     fetchMsgRealTime(novaMensagem => {
       // console.log('Nova mensagem:', novaMensagem);
       setListaMsg(valorAtualDaLista => {
-        const alterListAtual = [...valorAtualDaLista];
-        alterListAtual.shift();
-        return [novaMensagem, ...alterListAtual];
+        return [novaMensagem, ...valorAtualDaLista];
       });
     });
   }, []);
@@ -74,6 +72,7 @@ export default function ChatPage() {
       de: 'Loading',
       texto: 'Loading',
     });
+    console.log(alterList);
     setListaMsg([...alterList]); //seta mensagem fake que será substituida pela real assim que o fetch retornar
 
     setMensagem(''); //apaga campo de digitação
