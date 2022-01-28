@@ -2,15 +2,43 @@ import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/router';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
 const SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI4NTk0OSwiZXhwIjoxOTU4ODYxOTQ5fQ.4SMMDZ6fHHTLYqDPc-lFt1_KWgrWgOq8TRr8bhhS91w';
 const SUPABASE_URL = 'https://gckgugoiggffvlyvxxgk.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function fetchMsgRealTime(addMsg) {
+  supabaseClient
+    .from('mensagens')
+    .on('INSERT', res => {
+      console.log('Novas mensagens');
+      addMsg(res.new);
+    })
+    .subscribe();
+}
+
 export default function ChatPage() {
+  const roteamento = useRouter();
+  const usuarioLogado = roteamento.query.username;
+  console.log('roteamento.query:', roteamento.query);
+  console.log('usuarioLogado:', usuarioLogado);
   const [mensagem, setMensagem] = React.useState('');
-  const [listaMsg, setListaMsg] = React.useState([]);
+  const [listaMsg, setListaMsg] = React.useState([
+    // {
+    //   id: 1,
+    //   de: 'omariosouto',
+    //   texto:
+    //     ':sticker:http://2.bp.blogspot.com/-d21tffsTIQo/U_H9QjC69gI/AAAAAAAAKqM/wnvOyUr6a_I/s1600/Pikachu%2B2.gif',
+    // },
+    // {
+    //   id: 2,
+    //   de: 'peas',
+    //   texto: 'O ternário é meio triste',
+    // },
+  ]);
 
   React.useEffect(() => {
     supabaseClient
@@ -21,13 +49,21 @@ export default function ChatPage() {
         // console.log('Dados da consulta: ', data);
         setListaMsg(data);
       });
+    fetchMsgRealTime(novaMensagem => {
+      // console.log('Nova mensagem:', novaMensagem);
+      setListaMsg(valorAtualDaLista => {
+        const alterListAtual = [...valorAtualDaLista];
+        alterListAtual.shift();
+        return [novaMensagem, ...alterListAtual];
+      });
+    });
   }, []);
 
   function handleNovaMensagem(novaMensagem) {
     // Cria mensagem a ser inserida no db
     const mensagem = {
       // id: listaMsg.length + 1,
-      de: 'juan-kuhne',
+      de: usuarioLogado,
       texto: novaMensagem,
     };
 
@@ -47,8 +83,8 @@ export default function ChatPage() {
       .insert([mensagem])
       .then(({ data }) => {
         // console.log('Resposta insert:', data);
-        alterList.shift();
-        setListaMsg([data[0], ...alterList]);
+        // alterList.shift();
+        // setListaMsg([data[0], ...alterList]);
       });
   }
 
@@ -262,7 +298,17 @@ export default function ChatPage() {
                         ✖
                       </Text>
                     </Box>
-                    {mensagem.texto}
+                    {mensagem.texto.startsWith(':sticker:') ? (
+                      <Image
+                        src={mensagem.texto.replace(':sticker:', '')}
+                        styleSheet={{
+                          maxWidth: '12rem',
+                        }}
+                      />
+                    ) : (
+                      mensagem.texto
+                    )}
+                    {/* {mensagem.texto} */}
                   </Text>
                 );
               })}
@@ -282,6 +328,7 @@ export default function ChatPage() {
               styleSheet={{
                 display: 'flex',
                 alignItems: 'flex-start',
+                gap: '10px',
               }}
             >
               <TextField
@@ -306,6 +353,12 @@ export default function ChatPage() {
                   backgroundColor: appConfig.theme.colors.neutrals[800],
                   marginRight: '12px',
                   color: appConfig.theme.colors.neutrals[200],
+                }}
+              />
+              <ButtonSendSticker
+                onStickerClick={sticker => {
+                  // console.log('Salva esse sticker no banco:', sticker);
+                  handleNovaMensagem(`:sticker:${sticker}`);
                 }}
               />
               <Button
