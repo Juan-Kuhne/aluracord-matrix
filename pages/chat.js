@@ -52,7 +52,9 @@ export default function ChatPage() {
     fetchMsgRealTime(novaMensagem => {
       // console.log('Nova mensagem:', novaMensagem);
       setListaMsg(valorAtualDaLista => {
-        return [novaMensagem, ...valorAtualDaLista];
+        const ListaNew = [...valorAtualDaLista];
+        if (valorAtualDaLista[0].id === -1) ListaNew.shift();
+        return [novaMensagem, ...ListaNew];
       });
     });
   }, []);
@@ -65,19 +67,17 @@ export default function ChatPage() {
       texto: novaMensagem,
     };
 
-    // Cria mensagem fake para loading
     const alterList = [...listaMsg];
     alterList.unshift({
       id: -1,
-      de: 'Loading',
-      texto: 'Loading',
+      de: 'loading',
+      texto: 'Loading ...',
     });
-    console.log(alterList);
-    setListaMsg([...alterList]); //seta mensagem fake que será substituida pela real assim que o fetch retornar
+    setListaMsg([...alterList]);
 
     setMensagem(''); //apaga campo de digitação
 
-    supabaseClient //altera a mensagem fake pela real
+    supabaseClient
       .from('mensagens')
       .insert([mensagem])
       .then(({ data }) => {
